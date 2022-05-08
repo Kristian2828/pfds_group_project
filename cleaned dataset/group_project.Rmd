@@ -1,0 +1,52 @@
+---
+title: "Project"
+author: "KDi"
+date: "5/8/2022"
+output: word_document
+---
+
+## Library used to clean the data
+```{r}
+library(dplyr)
+library(tidyr)
+library(janitor)
+```
+
+## Getting the data from Github 
+```{r}
+url = "https://raw.githubusercontent.com/Kristian2828/pfds_group_project/main/dataset/dataset.csv"
+```
+
+## Exploring raw data 
+```{r}
+library(dplyr)
+df1 = read.csv(url)
+glimpse(df1)
+nrow(na.omit(df1))
+nrow(df1[!complete.cases(df1), ])
+any(is.na(df1))
+summary(df1)
+```
+
+## Format variable names
+```{r}
+library(janitor)
+df2 = clean_names(df1)
+View(df2)
+```
+
+## Dropping unnessary variables
+```{r}
+df2 = df1[-c(112:147)]
+View(df2)
+```
+
+## Replacing all missing values, "" with NA 
+```{r}
+cname = names(df2)
+for (i in cname) {
+  print(paste(i, sum(df2[i]=="")))
+  df2[!is.na(df2[i])&df2[i]=="",i] <-NA
+}
+```
+
