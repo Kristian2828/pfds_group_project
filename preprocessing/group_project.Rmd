@@ -1,0 +1,143 @@
+---
+title: "An analysis of the spotify dataset"
+author: "Sharmini Joseph Pereira (S2114594) | Kristian Surya Dinata (S2043845)"
+date: "5/8/2022"
+output: word_document
+---
+
+#1 Data Preparation
+
+## The data for this analysis comes from kaggle, source: https://www.kaggle.com/datasets/pepepython/spotify-huge-database-daily-charts-over-3-years?resource=download
+
+## Library used to clean the data
+```{r}
+library(dplyr)
+library(tidyr)
+library(janitor)
+library(tidyverse)
+library(tibble)
+library(grid)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+```
+
+## Importing the dataset which is obtained from Github 
+```{r}
+url = "https://raw.githubusercontent.com/Kristian2828/pfds_group_project/main/dataset/dataset.csv"
+df1 = read.csv(url)
+```
+
+## Description of the dataset
+```{r}
+#dimension of the dataset
+yes_0 = str_trim(paste0(dim(df1), sep = "  ", collapse = ""))
+
+#column names of the dataset
+vars_0 = str_trim(paste0(names(df1), sep = " | ", collapse = ""))
+
+# Creating a table
+table_attributes = data_frame(Data = 'Spotify_Dataset_BeforeCleaning',
+  `Rows  Columns` = yes_0,
+  Variables = vars_0)
+
+# Printing the table
+kable(table_attributes, format = "html") %>%
+  kable_styling(bootstrap_options = "striped") %>%
+     column_spec(2, width = "12em")
+```
+## Exploration of dataset
+```{r}
+# Check the dimensions of the data set
+dim = dim(df1)
+
+# View the structure of the data
+glimpse(df1)
+ 
+# View the column names because these will be useful handles
+names(df1)
+
+# View a summary of the data
+summary(df1)
+
+# View first 6 rows
+head(df1)
+
+# View last 6 rows
+tail(df1)
+```
+
+#2. Cleaning the data
+```{r}
+# Format variable names
+df2 = clean_names(df1)
+View(df2)
+
+# Since these removing these observations are not expected to affect our approach, we remove these incomplete observations
+# Removing NA values
+df2 = na.omit(df2)
+
+# Removing irrelevant columns
+df2 = df2 %>% select(-c(uri,key,genre_new,released_after_2017,explicit_false,explicit_true,album_2))
+df3 = df2[-c(26:66,88:140)]
+```
+
+## box plot of the audio features to find any extreme outliers
+```{r}
+boxplot(df3$loudness,
+  ylab = "loudness",
+  main = "Boxplot of loudness",
+  ylim = c(-30, 0)
+)
+
+boxplot(df3$danceability,
+  ylab = "dancebility",
+  main = "Boxplot of dancebility"
+)
+ 
+boxplot(df3$energy,
+  ylab = "energy",
+  main = "Boxplot of energy"
+)
+
+boxplot(df3$acoustics,
+  ylab = "acoustics",
+  main = "Boxplot of acoustics"
+)
+
+boxplot(df3$tempo,
+ ylab = "tempo",
+  main = "Boxplot of tempo"
+)
+
+#It's concluded there is no extreme outliers found in audio features
+```
+#3. Data manipulation
+#duration_minutes - which will have the duration of the song in minutes
+```{r}
+#Creating a duration in minutes column
+df3$duration_minutes <- df3$duration_ms/(1000*60)
+```
+#4. Finishing touches
+```{r}
+#dimension of the dataset
+yes = str_trim(paste0(dim(df3), sep = "  ", collapse = ""))
+
+#column names of the dataset
+vars = str_trim(paste0(names(df3), sep = " | ", collapse = ""))
+
+# Creating a table
+table_attributes = data_frame(Data = 'Spotify_Dataset_AfterCleaning',
+  `Rows  Columns` = yes,
+  Variables = vars)
+
+# Printing the table
+kable(table_attributes, format = "html") %>%
+  kable_styling(bootstrap_options = "striped") %>%
+     column_spec(2, width = "12em")
+```
+## Exporting the dataset
+```{r}
+write.csv(df3, "data_cleaned.csv")
+```
+
