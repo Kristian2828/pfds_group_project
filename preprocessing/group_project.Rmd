@@ -73,7 +73,7 @@ tail(df1)
 df2 = clean_names(df1)
 View(df2)
 
-# Since these removing these observations are not expected to affect our approach, we remove these incomplete observations
+# Removing incomplete observations
 # Removing NA values
 df2 = na.omit(df2)
 
